@@ -10,13 +10,13 @@ function getFile(file: fs.PathOrFileDescriptor) {
   const str = fs.readFileSync(file, 'utf-8')
   const size = str.length
   const sarr = str.split(/[\n,]/g)
-  const imports: string[]=[]
+  const imports: string[] = []
   const rowSize = sarr.length
   // 这里获取每个文件的import路径
   sarr.forEach((ele) => {
-   const str = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
+    const str = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
     if (str && str[1]) {
-       imports.push(str[1])
+      imports.push(str[1])
     }
   })
   const f =
@@ -114,7 +114,7 @@ export function getFileNodes(
           const obj = getFile(fullPath)
           Object.assign(item, obj)
           item.suffix = lastName
-           item.fullPath = fullPath
+          item.fullPath = fullPath
           nodes.push(item)
         }
       }
@@ -129,33 +129,84 @@ export function getFileNodes(
  * @param {*} relative
  * @param {*} absolute
  */
-// function relativeDir(relative: string, absolute: string) {
-//   let rela = relative.split('/')
-//   rela.shift()
-//   let abso = absolute.split('/')
-//   abso.shift()
+function relativeDir(relative: string, absolute: string) {
+  let rela = relative.split('/')
+  rela.shift()
+  let abso = absolute.split('/')
+  abso.shift()
+  let num = 0
+  for (let i = 0; i < rela.length; i++) {
+    if (rela[i] === abso[i]) {
+      num++
+    } else {
+      break
+    }
+  }
+  rela.splice(0, num)
+  abso.splice(0, num)
+  let str = ''
+  for (let j = 0; j < abso.length - 1; j++) {
+    str += '../'
+  }
+  if (!str) {
+    str += './'
+  }
+  str += rela.join('/')
+  return str
+}
 
-//   let num = 0
+/**
+ * @desc: 写文件
+ * @author: majun
+ */
+ function witeFile(rootPath: string, file:string) {
+  let fileStr = fs.readFileSync(file, 'utf-8')
+  let writeFlag = false // 如果啥都没改, 不更新文件
+  // fileStr = '// 我加注释 \n' + fileStr
+  const sarr = fileStr.split(/[\n,]/g)
+  sarr.forEach((ele, index) => {
+    // 注释的不转
+    if (ele.indexOf('//') < 0) {
+      const impStr = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
+      // 没有import的不转
+      if (impStr && impStr[1]) {
+        let filePath = impStr[1]
+        // 如果有@符号的
+        if (filePath.indexOf('@') > -1) {
+          // console.log(filePath)
+          let relative = filePath.replace('@', rootPath)
+          let relatPath = relativeDir(relative, file)
+          // console.log(relatPath)
+          // 把改好的替换回去
+          sarr[index] = ele.replace(filePath, relatPath)
+          writeFlag = true
+        }
+      }
+    }
+  })
+  if (writeFlag) {
+    fileStr = sarr.join('')
+    // 异步写入数据到文件
+    // console.log(str)
+    fs.writeFile(file, fileStr, { encoding: 'utf8' }, () => {
+      console.log('Write successful-------' + file)
+    })
+  }
+}
 
-//   for (let i = 0; i < rela.length; i++) {
-//     if (rela[i] === abso[i]) {
-//       num++
-//     } else {
-//       break
-//     }
-//   }
-//   rela.splice(0, num)
-//   abso.splice(0, num)
-//   let str = ''
-//   for (let j = 0; j < abso.length - 1; j++) {
-//     str += '../'
-//   }
-//   if (!str) {
-//     str += './'
-//   }
-//   str += rela.join('/')
-//   return str
-// }
+
+  // const file = 'D:\\gitwork\\reconstruct-relative-path\\unuse\\App.vue'
+export function witeNodeFile(nodes: Array<ItemType>, rootPath: string) {
+  function getNode(nodes: Array<ItemType>) {
+    if (nodes.hasOwnProperty('children')) {
+      getNode(nodes.children)
+    } else {
+      // witeFile(rootPath)
+    }
+
+  }
+       getNode(nodes)
+}
 
 /**
  * @description:Recursive file name + note  递归得到文件名+note
@@ -205,7 +256,7 @@ function setMd(obj: ItemType, last: Boolean): string {
  * @param {data}  要写的数据
  * @return {fileName}  要写入文件地址
  */
-export  function wirteJs(data: string, filePath: string) {
+export function wirteJs(data: string, filePath: string) {
   const file = path.resolve(__dirname, filePath)
   const pre = 'export default'
   // 异步写入数据到文件
@@ -230,13 +281,13 @@ function format(num: number) {
 function setCountMd(obj: secoutType) {
   const { rowTotleNumber, sizeTotleNumber, coutObj } = obj
   let countMd = ''
-  let totle=0
+  let totle = 0
   for (const key in coutObj) {
     const ele = coutObj[key]
     totle += ele
     countMd += `The suffix is ${key} has ${ele} files\n`
   }
-   countMd += `The totle  has ${totle} files\n`
+  countMd += `The totle  has ${totle} files\n`
   let md = `Total number of file lines: ${format(rowTotleNumber)},
 Total number of codes: ${format(sizeTotleNumber)} \n`
   md = countMd + md
@@ -271,26 +322,24 @@ function getCountMd(datas: Array<ItemType>) {
   }
 }
 
-
-
 /**
  * @description: Generate MD 生成md
  * @param {object} option
  * @return {*}
  */
 export function getMd(option?: { ignore: string[] | undefined; include: string[] | undefined } | undefined) {
-  console.log('\x1B[36m%s\x1B[0m', '*** run location: ', path.resolve('./')+'\n')
+  console.log('\x1B[36m%s\x1B[0m', '*** run location: ', path.resolve('./') + '\n')
   const nodes = getFileNodes(option)
   const countMdObj = getCountMd(nodes)
   const coutMd = setCountMd(countMdObj)
   console.log('\x1B[33m%s\x1b[0m', coutMd)
   const note = getNote(nodes) // 得到所有note的数组
-  const md = note.join('')+'\n' // 数组转字符串
+  const md = note.join('') + '\n' // 数组转字符串
   if (md.length > 0) {
     console.log('\x1B[36m%s\x1B[0m', '*** Automatic generation completed ! ')
   }
 
-  return {md:md + coutMd,nodes}
+  return { md: md + coutMd, nodes }
 }
 
 /**
