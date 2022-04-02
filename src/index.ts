@@ -10,13 +10,21 @@ function getFile(file: fs.PathOrFileDescriptor) {
   const str = fs.readFileSync(file, 'utf-8')
   const size = str.length
   const sarr = str.split(/[\n,]/g)
+  const imports: string[]=[]
   const rowSize = sarr.length
+  // 这里获取每个文件的import路径
+  sarr.forEach((ele) => {
+   const str = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
+    if (str && str[1]) {
+       imports.push(str[1])
+    }
+  })
   const f =
     sarr[0].indexOf('eslint') === -1 &&
     (sarr[0].indexOf('-->') > -1 || sarr[0].indexOf('*/') > -1 || sarr[0].indexOf('//') > -1)
       ? sarr[0]
       : ''
-  return { note: f, size, rowSize }
+  return { note: f, size, rowSize, imports }
 }
 
 type ItemType = {
@@ -27,6 +35,8 @@ type ItemType = {
   size: number
   suffix: string
   rowSize: number
+  fullPath: string
+  import?: Array<string>
   children?: ItemType[]
 }
 
@@ -104,6 +114,7 @@ export function getFileNodes(
           const obj = getFile(fullPath)
           Object.assign(item, obj)
           item.suffix = lastName
+           item.fullPath = fullPath
           nodes.push(item)
         }
       }
@@ -111,6 +122,40 @@ export function getFileNodes(
   }
   return nodes
 }
+
+/**
+ * @desc: 或取相对路径
+ * @author: majun
+ * @param {*} relative
+ * @param {*} absolute
+ */
+// function relativeDir(relative: string, absolute: string) {
+//   let rela = relative.split('/')
+//   rela.shift()
+//   let abso = absolute.split('/')
+//   abso.shift()
+
+//   let num = 0
+
+//   for (let i = 0; i < rela.length; i++) {
+//     if (rela[i] === abso[i]) {
+//       num++
+//     } else {
+//       break
+//     }
+//   }
+//   rela.splice(0, num)
+//   abso.splice(0, num)
+//   let str = ''
+//   for (let j = 0; j < abso.length - 1; j++) {
+//     str += '../'
+//   }
+//   if (!str) {
+//     str += './'
+//   }
+//   str += rela.join('/')
+//   return str
+// }
 
 /**
  * @description:Recursive file name + note  递归得到文件名+note
@@ -160,14 +205,14 @@ function setMd(obj: ItemType, last: Boolean): string {
  * @param {data}  要写的数据
  * @return {fileName}  要写入文件地址
  */
-// function wirteJs(data: string, filePath: string) {
-//   const file = path.resolve(__dirname, filePath)
-//   const pre = 'export default'
-//   // 异步写入数据到文件
-//   fs.writeFile(file, pre + data, { encoding: 'utf8' }, (err) => {
-//     console.error(err)
-//   })
-// }
+export  function wirteJs(data: string, filePath: string) {
+  const file = path.resolve(__dirname, filePath)
+  const pre = 'export default'
+  // 异步写入数据到文件
+  fs.writeFile(file, pre + data, { encoding: 'utf8' }, (err) => {
+    console.error(err)
+  })
+}
 /**
  * @description:Thousands format 千分位格式化
  * @param {num} To format a number 要格式化数字
@@ -226,6 +271,8 @@ function getCountMd(datas: Array<ItemType>) {
   }
 }
 
+
+
 /**
  * @description: Generate MD 生成md
  * @param {object} option
@@ -234,8 +281,6 @@ function getCountMd(datas: Array<ItemType>) {
 export function getMd(option?: { ignore: string[] | undefined; include: string[] | undefined } | undefined) {
   console.log('\x1B[36m%s\x1B[0m', '*** run location: ', path.resolve('./')+'\n')
   const nodes = getFileNodes(option)
-  // 得到md对象
-  // wirteJs(JSON.stringify(nodes), __dirname + '\\readme-file.js')
   const countMdObj = getCountMd(nodes)
   const coutMd = setCountMd(countMdObj)
   console.log('\x1B[33m%s\x1b[0m', coutMd)
@@ -245,7 +290,7 @@ export function getMd(option?: { ignore: string[] | undefined; include: string[]
     console.log('\x1B[36m%s\x1B[0m', '*** Automatic generation completed ! ')
   }
 
-  return md + coutMd
+  return {md:md + coutMd,nodes}
 }
 
 /**

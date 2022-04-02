@@ -1,10 +1,23 @@
-/* 入口 */
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+// 我加注释 
+
 import { createApp } from 'vue'
 import App from './App.vue'
 // import '../lib/style.css'
-// import SketchRule from "../lib/index.es.js?4563452";
+import SketchRule from "@/unuse/component/user-ruler.vue";
 const app = createApp(App)
-// app.use(SketchRule);
+app.use(SketchRule);
 
 // const MyComponent = app.component('SketchRule')
 // console.log(MyComponent, 'MyComponentMyComponent')
