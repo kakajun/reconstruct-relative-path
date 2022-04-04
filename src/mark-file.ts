@@ -44,9 +44,13 @@ export default function markFile(nodes: ItemType[], rootPath: string) {
       let absolutePath = path.replace('@', rootPath)
       // 打标记
       setmark(absolutePath, ele.name)
+      // 标记归属设置
+
       // 通过文件地址, 找到nodes的依赖地址, 把依赖文件也打标记
       const node = findNodes(nodes, absolutePath)
-      if (node && node.imports) {
+
+      if (node && node.imports&&node.belongTo) {
+        node.belongTo.push(ele.name)
         // 找到有子文件了,循环它
         debug(node.imports, '8888')
         node.imports.forEach((element) => {

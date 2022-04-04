@@ -20,13 +20,13 @@ function agmd() {
   // 得到md文档
   console.log('\x1B[36m%s\x1B[0m', '*** location: ', `${rootPath}\\readme-md.md`)
   wirteMd(md, `${rootPath}\\readme-md.md`)
-  // 得到md对象
-  wirteJsNodes(JSON.stringify(nodes), rootPath + '\\readme-file.js')
   // 更改所有为绝对路径
   changePath(nodes, rootPath)
   // 打标记
   markFile(nodes, rootPath)
   // 分文件
   markWriteFile()
+  // 得到md对象
+  wirteJsNodes(JSON.stringify(nodes), rootPath + '\\readme-file.js')
 }
 agmd()
