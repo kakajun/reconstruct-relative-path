@@ -69,6 +69,7 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
             writeFlag = true
           }
           let absolutetPath = relativeToabsolute(changeName, fullPath)
+          changeName = absolutetPath
           const i = absolutetPath.lastIndexOf('.')
           const lastName = absolutetPath.substring(i)
           debug('lastName: ', lastName)
@@ -89,12 +90,9 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
             }
           }
         }
-        if (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1) {
-          // 只有相对路径引用我才存为依赖, 插件不算
+          debug('后缀补齐文件: ', changeName)
           imports.push(changeName)
           console.log(node.imports)
-        }
-
         // 相对路径改绝对路径没有应用场景, 这里只是做测试
         // else {
         //   if (filePath.indexOf('@') === -1 && (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1)) {

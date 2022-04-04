@@ -39,8 +39,8 @@ export type ItemType = {
   suffix: string
   rowSize: number
   fullPath: string
-  belongTo?: Array<string>
-  imports: Array<string>
+  belongTo: Array<string> // 标记归属设置 分类用
+  imports: Array<string>   // 依赖收集
   children?: ItemType[]
 }
 
@@ -88,8 +88,8 @@ export function getFileNodes(
         isDir,
         level,
         note: '',
-        imports:[''],
-        belongTo: ['']
+         imports:new Array,
+        belongTo:new Array
       } as ItemType
     })
     //Sort folders and files, otherwise the generated will not correspond to the opening order of the editor 对文件夹和文件进行排序,要不然生成的和编辑器打开的顺序不对应
