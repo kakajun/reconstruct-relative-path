@@ -2,9 +2,10 @@
 'use strict'
 import path from 'path'
 import { wirteMd, getMd } from './wirte-md'
-import { witeNodeFile, wirteJs } from './change-path'
+import { changePath, wirteJsNodes } from './change-path'
 import stringToArgs from '../script/cli'
 import handle from '../script/cli/handle'
+import markFile from './mark-file'
 const options = stringToArgs(process.argv)
 const { ignores: ignore, includes: include } = handle(options)
 /**
@@ -19,7 +20,10 @@ function agmd() {
   console.log('\x1B[36m%s\x1B[0m', '*** location: ', `${path.resolve('./')}\\readme-md.md`)
   wirteMd(md, `${rootPath}\\readme-md.md`)
   // 得到md对象
-  wirteJs(JSON.stringify(nodes), rootPath + '\\readme-file.js')
-  witeNodeFile(nodes,rootPath)
+  wirteJsNodes(JSON.stringify(nodes), rootPath + '\\readme-file.js')
+  // 更改所有绝对路径
+  changePath(nodes, rootPath)
+  // 打标记
+  markFile()
 }
 agmd()

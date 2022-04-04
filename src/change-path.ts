@@ -1,3 +1,11 @@
+/**
+*================================================
+*@date:2022/04/04
+*@author:mj
+*@desc:整个文件主要把绝对路径修改为相对路径
+*
+*================================================
+*/
 import { ItemType } from './get-file'
 import fs from 'fs'
 import path from 'path'
@@ -8,7 +16,7 @@ import path from 'path'
  * @param {Array} nodes      整个文件的nodes
  * @param {string} rootPath  根路径
  */
-export function witeNodeFile(nodes: Array<ItemType>, rootPath: string) {
+export function changePath(nodes: Array<ItemType>, rootPath: string) {
   function getNode(nodes: Array<ItemType>) {
     nodes.forEach((ele) => {
       if (ele.children) {
@@ -33,13 +41,15 @@ function witeFile(rootPath: string, file: string) {
   // fileStr = '// 我加注释 \n' + fileStr
   const sarr = fileStr.split(/[\n]/g)
   sarr.forEach((ele, index) => {
-    // 注释的不转
-    if (ele.indexOf('//') < 0) {
+    // 注释的不转,其他公共也不转
+    const ignore = ['//', '@xiwicloud/components', '@xiwicloud/lims']
+    const flag=ignore.some((item) => ele.indexOf(item) < 0)
+    if (flag) {
       const impStr = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
       // 没有import的不转
       if (impStr && impStr[1]) {
         let filePath = impStr[1]
-        // 如果有@符号的
+        // 如果有@符号的, 并且忽略文件的
         if (filePath.indexOf('@') > -1) {
           // console.log(filePath)
           let relative = filePath.replace('@', rootPath)
@@ -104,7 +114,7 @@ function relativeDir(relative: string, absolute: string) {
  * @param {data}  要写的数据
  * @return {fileName}  要写入文件地址
  */
-export function wirteJs(data: string, filePath: string) {
+export function wirteJsNodes(data: string, filePath: string) {
   const file = path.resolve(__dirname, filePath)
   const pre = 'export default'
   // 异步写入数据到文件
