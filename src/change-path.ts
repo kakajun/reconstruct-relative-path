@@ -38,7 +38,7 @@ export function changePath(nodes: Array<ItemType>, rootPath: string) {
  * @param {string} rootPath  根地址
  * @param {string} file  目标地址
  */
-function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
+async function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
   const { fullPath, imports = [] } = node
   let fileStr = fs.readFileSync(fullPath, 'utf-8')
   let writeFlag = false // 如果啥都没改, 不更新文件
@@ -81,25 +81,28 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
             debug('待补全的文件: ', changeName)
             // 获取绝对路径
             const suffix = ['.js', '.vue', '/index.js', '/index.vue']
-            for (let index = 0; index < suffix.length; index++) {
-              const fixStr = suffix[index]
-              if (fs.existsSync(absolutetPath + fixStr)) {
+            for (let j = 0; j < suffix.length; j++) {
+              const fixStr = suffix[j]
+              if (await fs.existsSync(absolutetPath + fixStr)) {
                 // 把改好的替换回去
                 debug('补全的文件: ', absolutetPath + fixStr)
                 changeName = absolutetPath + fixStr
                 // 写进去
                 let relat = ele.match(reg)
-
                 if (relat && relat[1]) {
-                      debug('relat[1]: ', relat[1])
+                  debug('relat[1]: ', relat[1], ele)
                   // 重新把相对路径写进代码去
                   sarr[index] = ele.replace(relat[1], relat[1] + fixStr)
+                  debug('sarr[index] 11', sarr[index])
                 }
                 break
               }
             }
+              debug('sarr[index] 333', sarr[index])
+            writeFlag = true
           }
         }
+     debug('sarr[index]222 ', sarr[index])
         debug('后缀补齐文件: ', changeName)
         imports.push(changeName)
         console.log(node.imports)
@@ -120,7 +123,7 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
   if (writeFlag) {
     fileStr = sarr.join('\n')
     // 异步写入数据到文件
-    // debug(str)
+    debug(fileStr)
     fs.writeFile(fullPath, fileStr, { encoding: 'utf8' }, () => {
       console.log('Write successful-------' + fullPath)
     })
