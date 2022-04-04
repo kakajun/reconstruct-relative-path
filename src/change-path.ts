@@ -61,7 +61,7 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
                  writeFlag = true
                }
         } else {
-          if (filePath.indexOf('@')===-1) {
+          if (filePath.indexOf('@') === -1 && (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1)) {
             let absolutetPath = relativeToabsolute(filePath, file)
             // console.log(relatPath)
             // 把改好的替换回去
