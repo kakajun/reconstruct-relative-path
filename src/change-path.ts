@@ -62,16 +62,13 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
                }
         } else {
           if (filePath.indexOf('@')===-1) {
-            // console.log(filePath)
-            let relative = filePath.replace('@', rootPath)
-            let relatPath = absoluteTorelative(relative, file)
+            let absolutetPath = relativeToabsolute(filePath, file)
             // console.log(relatPath)
             // 把改好的替换回去
-            sarr[index] = ele.replace(filePath, relatPath)
+            sarr[index] = ele.replace(filePath, absolutetPath)
             writeFlag = true
           }
         }
-
       }
     }
   })

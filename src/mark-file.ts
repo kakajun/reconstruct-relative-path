@@ -7,7 +7,7 @@
 *================================================
 */
 // import { getFileNodes } from './get-file'
-import { relativeToabsolute } from './change-path'
+// import { relativeToabsolute } from './change-path'
 // import fs from 'fs'
 // import path from 'path'
 const classifiedRouting = [
@@ -32,16 +32,17 @@ parseImport(classifiedRouting)
 
 function parseImport(arrs: Array<any>) {
   arrs.forEach((ele) => {
-    const path = ele.component
-    console.log(path,"777")
-    var a = '../c/d/main.js'
-    var b = '/a/b/zhangjing/index.js'
-   let c= relativeToabsolute(a,b)
-    console.log(c,"00")
-    // 加载文件
-    // readFile(path)
+    ele.router.forEach((obj: { component: any; }) => {
+      const path = obj.component
+      console.log(path, '777')
+      // var a = '../c/d/main.js'
+      // var b = '/a/b/zhangjing/index.js'
+      // let c = relativeToabsolute(a, b)
+      // console.log(c, '00')
+      // 加载文件
+      // readFile(path)
+    })
   })
-
 }
 
 
