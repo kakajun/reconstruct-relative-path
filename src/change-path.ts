@@ -39,7 +39,7 @@ export function changePath(nodes: Array<ItemType>, rootPath: string) {
  * @param {string} file  目标地址
  */
 function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
-  const { fullPath } = node
+  const { fullPath, imports = [] } = node
   let fileStr = fs.readFileSync(fullPath, 'utf-8')
   let writeFlag = false // 如果啥都没改, 不更新文件
   // fileStr = '// 我加注释 \n' + fileStr
@@ -52,7 +52,10 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
       const impStr = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
       // 没有import的不转
       if (impStr && impStr[1]) {
+        // 依赖的具体名字
         let filePath = impStr[1]
+        // 准备修改的名字
+        let changeName = filePath
         // 如果有@符号的, 并且忽略文件的
         if (isRelative) {
           if (filePath.indexOf('@') > -1) {
@@ -61,26 +64,35 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
             let relatPath = absoluteTorelative(relative, fullPath)
             // debug(relatPath)
             // 把改好的替换回去
+            changeName = relatPath
             sarr[index] = ele.replace(filePath, relatPath)
             writeFlag = true
           }
-          const i = fullPath.lastIndexOf('.')
-          const lastName = fullPath.substring(i)
-          // 假如没有后缀,补上
-          if (!lastName) {
+          let absolutetPath = relativeToabsolute(changeName, fullPath)
+          const i = absolutetPath.lastIndexOf('.')
+          const lastName = absolutetPath.substring(i)
+          debug('lastName: ', lastName)
+          debug('changeName: ', changeName)
+          // 假如没有后缀,补上--后缀名不可能大于10
+          if (lastName.length > 10) {
+            debug('待补全的文件: ', changeName)
             // 获取绝对路径
             const suffix = ['.js', '.vue', '/index.js', '/index.vue']
-            let absolutetPath = relativeToabsolute(filePath, fullPath)
             for (let index = 0; index < suffix.length; index++) {
               const fixStr = suffix[index]
               if (fs.existsSync(absolutetPath + fixStr)) {
                 // 把改好的替换回去
                 debug('补全的文件: ', absolutetPath + fixStr)
-                sarr[index] = absolutetPath + fixStr
+                changeName = absolutetPath + fixStr
                 break
               }
             }
           }
+        }
+        if (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1) {
+          // 只有相对路径引用我才存为依赖, 插件不算
+          imports.push(changeName)
+          console.log(node.imports)
         }
 
         // 相对路径改绝对路径没有应用场景, 这里只是做测试

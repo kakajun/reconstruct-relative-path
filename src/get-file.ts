@@ -21,28 +21,13 @@ function getFile(file: string) {
   const str = fs.readFileSync(file, 'utf-8')
   const size = str.length
   const sarr = str.split(/[\n]/g)
-  const imports: string[] = []
   const rowSize = sarr.length
-  // 这里获取每个文件的import路径
-  // sarr.forEach((ele) => {
-  //   const str = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
-  //   if (str && str[1]) {
-  //     // 这里存绝对路径
-  //      let absolutetPath=''
-  //     if (str[1].indexOf('@') === -1 && (str[1].indexOf('./') > -1 || str[1].indexOf('../') > -1)) {
-  //         // 只有相对路径才会保存,那么首先得把绝对路径都转为相对路径
-  //         absolutetPath = relativeToabsolute(str[1], file)
-  //         // debug(absolutetPath)
-  //            imports.push(absolutetPath)
-  //       }
-  //   }
-  // })
   const f =
     sarr[0].indexOf('eslint') === -1 &&
     (sarr[0].indexOf('-->') > -1 || sarr[0].indexOf('*/') > -1 || sarr[0].indexOf('//') > -1)
       ? sarr[0]
       : ''
-  return { note: f, size, rowSize, imports }
+  return { note: f, size, rowSize }
 }
 
 export type ItemType = {
@@ -55,7 +40,7 @@ export type ItemType = {
   rowSize: number
   fullPath: string
   belongTo?: Array<string>
-  imports?: Array<string>
+  imports: Array<string>
   children?: ItemType[]
 }
 
@@ -103,6 +88,7 @@ export function getFileNodes(
         isDir,
         level,
         note: '',
+        imports:[''],
         belongTo: ['']
       } as ItemType
     })
