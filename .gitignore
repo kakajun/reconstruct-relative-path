@@ -19,5 +19,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+readme-file.js
 readme-md.md
 /demo

@@ -31,7 +31,7 @@ function witeFile(rootPath: string, file: string) {
   let fileStr = fs.readFileSync(file, 'utf-8')
   let writeFlag = false // 如果啥都没改, 不更新文件
   // fileStr = '// 我加注释 \n' + fileStr
-  const sarr = fileStr.split(/[\n,]/g)
+  const sarr = fileStr.split(/[\n]/g)
   sarr.forEach((ele, index) => {
     // 注释的不转
     if (ele.indexOf('//') < 0) {
@@ -53,6 +53,11 @@ function witeFile(rootPath: string, file: string) {
     }
   })
   if (writeFlag) {
+    console.log(fileStr)
+    for (let index = 0; index < sarr.length; index++) {
+      const element = sarr[index]
+      console.log(element)
+    }
     fileStr = sarr.join('\n')
     // 异步写入数据到文件
     // console.log(str)

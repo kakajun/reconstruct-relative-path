@@ -9,7 +9,7 @@ import path from 'path'
 function getFile(file: fs.PathOrFileDescriptor) {
   const str = fs.readFileSync(file, 'utf-8')
   const size = str.length
-  const sarr = str.split(/[\n,]/g)
+  const sarr = str.split(/[\n]/g)
   const imports: string[] = []
   const rowSize = sarr.length
   // 这里获取每个文件的import路径
