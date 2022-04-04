@@ -51,8 +51,8 @@ export type ItemType = {
  */
 export function getFileNodes(
   option: { ignore: string[] | undefined; include: string[] | undefined } | undefined,
-  nodes: Array<ItemType> = [],
   dir = path.resolve('./'),
+  nodes: Array<ItemType> = [],
   level = 0
 ): Array<ItemType> {
   //File filtering -- full name with suffix required  文件过滤--需要全称带后缀
@@ -104,7 +104,7 @@ export function getFileNodes(
       const isDir = fs.lstatSync(fullPath).isDirectory()
       if (isDir) {
         //recursion 递归
-        getFileNodes(option, (item.children = []), fullPath, level + 1)
+        getFileNodes(option, fullPath, (item.children = []), level + 1)
         nodes.push(item)
       } else {
         const i = fullPath.lastIndexOf('.')

@@ -13,13 +13,13 @@ const { ignores: ignore, includes: include } = handle(options)
  * @return {*}
  */
 function agmd() {
-  const { md, nodes } = getMd({ ignore, include })
-  let rootPath=path.resolve('./')
+  let rootPath = path.resolve('./unuse')
+  const { md, nodes } = getMd(rootPath,{ ignore, include })
   // 得到md文档
   console.log('\x1B[36m%s\x1B[0m', '*** location: ', `${path.resolve('./')}\\readme-md.md`)
   wirteMd(md, `${rootPath}\\readme-md.md`)
   // 得到md对象
   wirteJs(JSON.stringify(nodes), rootPath + '\\readme-file.js')
- witeNodeFile(nodes,rootPath)
+  witeNodeFile(nodes,rootPath)
 }
 agmd()
