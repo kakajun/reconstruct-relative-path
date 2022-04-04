@@ -44,12 +44,14 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
   let writeFlag = false // 如果啥都没改, 不更新文件
   // fileStr = '// 我加注释 \n' + fileStr
   const sarr = fileStr.split(/[\n]/g)
-  sarr.forEach((ele, index) => {
+  for (let index = 0; index < sarr.length; index++) {
+    const ele = sarr[index]
     // 注释的不转,其他公共也不转
     const ignore = ['//', '@xiwicloud/components', '@xiwicloud/lims']
     const flag = ignore.some((item) => ele.indexOf(item) < 0)
+    const reg = /import.*from [\"|\'](.*)[\'|\"]/
     if (flag) {
-      const impStr = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
+      const impStr = ele.match(reg)
       // 没有import的不转
       if (impStr && impStr[1]) {
         // 依赖的具体名字
@@ -85,14 +87,22 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
                 // 把改好的替换回去
                 debug('补全的文件: ', absolutetPath + fixStr)
                 changeName = absolutetPath + fixStr
+                // 写进去
+                let relat = ele.match(reg)
+
+                if (relat && relat[1]) {
+                      debug('relat[1]: ', relat[1])
+                  // 重新把相对路径写进代码去
+                  sarr[index] = ele.replace(relat[1], relat[1] + fixStr)
+                }
                 break
               }
             }
           }
         }
-          debug('后缀补齐文件: ', changeName)
-          imports.push(changeName)
-          console.log(node.imports)
+        debug('后缀补齐文件: ', changeName)
+        imports.push(changeName)
+        console.log(node.imports)
         // 相对路径改绝对路径没有应用场景, 这里只是做测试
         // else {
         //   if (filePath.indexOf('@') === -1 && (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1)) {
@@ -105,7 +115,8 @@ function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
         // }
       }
     }
-  })
+  }
+
   if (writeFlag) {
     fileStr = sarr.join('\n')
     // 异步写入数据到文件
