@@ -54,7 +54,7 @@ export  function markWriteFile(nodes: ItemType[], name: string, path: string, ro
  * @param {string} name
  * @param {string} rootPath
  */
-function setDispFile(node: ItemType,name: string,path: string) {
+function setDispFile(node: ItemType,name: string, path: string) {
     debug('setDispFile入参: ', name, path)
   // 1. 依次找到最外层文件夹
   const relative = node.fullPath.replace(path + '\\', '')
@@ -62,19 +62,28 @@ function setDispFile(node: ItemType,name: string,path: string) {
   debug('relative: ', relative)
   // 文件, copy文件
   if (foldName.indexOf('.') > -1) {
-    copyFile(node.fullPath, name)
+    copyFile(node.fullPath, name, path)
   } else {
     // 文件夹创建
-     setFolder(path + '\\' + name, foldName[0])
+    setFolder(path + '\\' + name, foldName[0])
+    path = path + '\\' + name+foldName[0]
   }
-
-
-  // 2. 如果是文件了就写入
-
 }
 
-export function copyFile(path: string, name: string) {
-   debug('copyFile入参: ', name, path)
+/**
+ * @desc: 读取原文件,写入到新地址
+ * @author: majun
+ * @param {string} path
+ * @param {string} name
+ * @param {string} nuePath
+ */
+export function copyFile(path: string, name: string, newPath: string) {
+  debug('copyFile入参: ', name, path, newPath)
+  const str = fs.readFileSync(path, 'utf-8')
+  // 异步写入数据到文件
+  fs.writeFile(newPath, str, { encoding: 'utf8' }, () => {
+    console.log('newfile write successful', newPath + name)
+  })
 }
 
 /**
