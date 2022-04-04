@@ -1,5 +1,5 @@
 {
-  "name": "agmd",
+  "name": "reconstruct-relative-path",
   "version": "0.2.9",
   "description": "auto generate markdown for node",
   "keywords": [
@@ -12,17 +12,12 @@
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
   "typings": "lib/index.d.ts",
-  "bin": {
-    "agmd": "./bin/agmd.js"
-  },
   "scripts": {
-    "dev": "npx nodemon src/agmd.ts",
-    "agmd": "npx agmd --ignore lib,node_modules,dist --include .js,.ts,.vue",
+    "dev": "npx nodemon src/index.ts",
     "lint": "eslint \"src/**/*.{ts}\" --max-warnings=0",
     "build": "node script/build.js",
     "prepare": "husky install",
-    "lint-fix": "eslint --fix  --ext .js,.ts",
-    "test": "npm run build && node bin/agmd"
+    "lint-fix": "eslint --fix  --ext .js,.ts"
   },
   "author": "kakajun <253495832@qq.com>",
   "repository": {
