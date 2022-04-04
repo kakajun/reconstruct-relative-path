@@ -1,4 +1,4 @@
-import { ItemType } from './getFile'
+import { ItemType } from './get-file'
 import fs from 'fs'
 import path from 'path'
 // const file = 'D:\\gitwork\\reconstruct-relative-path\\unuse\\App.vue'
@@ -53,7 +53,7 @@ function witeFile(rootPath: string, file: string) {
     }
   })
   if (writeFlag) {
-    fileStr = sarr.join('')
+    fileStr = sarr.join('\n')
     // 异步写入数据到文件
     // console.log(str)
     fs.writeFile(file, fileStr, { encoding: 'utf8' }, () => {

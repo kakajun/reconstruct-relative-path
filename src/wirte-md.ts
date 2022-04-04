@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { getFileNodes, getNote } from './getFile'
-import { ItemType } from './getFile'
+import { getFileNodes, getNote } from './get-file'
+import { ItemType } from './get-file'
 
 type secoutType = { rowTotleNumber: number; sizeTotleNumber: number; coutObj: { [key: string]: number } }
 /**

@@ -40,8 +40,6 @@ export type ItemType = {
   children?: ItemType[]
 }
 
-
-
 /**
  * @description:Generate node information for all files 生成所有文件的node信息
  * @param {Array} nodes

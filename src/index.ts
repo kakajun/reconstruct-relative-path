@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict'
 import path from 'path'
-import { wirteMd, getMd } from './wirteMd'
-import { witeNodeFile, wirteJs } from './path'
+import { wirteMd, getMd } from './wirte-md'
+import { witeNodeFile, wirteJs } from './change-path'
 import stringToArgs from '../script/cli'
 import handle from '../script/cli/handle'
 const options = stringToArgs(process.argv)
