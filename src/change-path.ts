@@ -9,7 +9,9 @@
 import { ItemType } from './get-file'
 import fs from 'fs'
 import path from 'path'
-// const file = 'D:\\gitwork\\reconstruct-relative-path\\unuse\\App.vue'
+import createDebugger from 'debug'
+const debug = createDebugger('change-path')
+  debug.enabled = true
 /**
  * @desc: 递归循环所有文件
  * @author: majun

@@ -9,6 +9,9 @@
 import fs from 'fs'
 import path from 'path'
 import { relativeToabsolute } from './change-path'
+import createDebugger from 'debug'
+const debug = createDebugger('get-file')
+ debug.enabled = true
 /**
  * @description:Gets the header comment of the file  获取文件的头部注释
  * @param {*} file
@@ -51,7 +54,7 @@ export type ItemType = {
   suffix: string
   rowSize: number
   fullPath: string
-  import?: Array<string>
+  imports?: Array<string>
   children?: ItemType[]
 }
 

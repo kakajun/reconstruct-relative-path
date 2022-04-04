@@ -1,18 +1,20 @@
 /**
-*================================================
-*@date:2022/04/04
-*@author:mj
-*@desc:给路由文件打标记, 把标记打到最后,因为头部已经给了注释
-*
-*================================================
-*/
+ *================================================
+ *@date:2022/04/04
+ *@author:mj
+ *@desc:给路由文件打标记, 把标记打到最后,因为头部已经给了注释
+ *
+ *================================================
+ */
 // import { getFileNodes } from './get-file'
 // import { relativeToabsolute } from './change-path'
 import fs from 'fs'
 
-import { ItemType } from "./get-file";
-
-// import path from 'path'
+import { ItemType } from './get-file'
+import createDebugger from 'debug'
+const debug = createDebugger('mark-file')
+debug.enabled = true
+//1. 整理要分类的路由,搞个数组对象分类
 const classifiedRouting = [
   {
     name: '1工程',
@@ -21,21 +23,21 @@ const classifiedRouting = [
         path: '/about',
         name: 'about',
         // 路由必须都是绝对路径
-        component:'@/App.vue'
+        component: '@/App.vue'
       }
     ]
   }
 ]
+/**
+ * @desc: 标记文件主程序
+ * @author: majun
+ * @param {ItemType} nodes
+ * @param {string} rootPath
+ */
 export default function markFile(nodes: ItemType[], rootPath: string) {
-  //1. 整理要分类的路由,搞个数组对象分类
-  console.log(classifiedRouting)
-  //2. 循环解析import 找文件(如果子文件有依赖,继续找)
-  parseImport(nodes, rootPath,classifiedRouting)
-  //3. 给尾部打标记
-}
-
-function parseImport(nodes: ItemType[], rootPath: any,arrs: Array<any>) {
-  arrs.forEach((ele) => {
+  // 外层循环要分类的路由
+  classifiedRouting.forEach((ele) => {
+    // 这里循环打标记的路由
     ele.router.forEach((obj: { component: any }) => {
       const path = obj.component
       // 路径转绝对路径
@@ -44,16 +46,18 @@ function parseImport(nodes: ItemType[], rootPath: any,arrs: Array<any>) {
       setmark(absolutePath, ele.name)
       // 通过文件地址, 找到nodes的依赖地址, 把依赖文件也打标记
       const node = findNodes(nodes, absolutePath)
-      if (node) {
+      if (node && node.imports) {
+        // 找到有子文件了,循环它
+        debug(node.imports, '8888')
+        node.imports.forEach((element) => {
+          debug(element, '777222')
+          // 打标记
+          setmark(element, ele.name)
+        })
       }
-      // console.log(path, '777')
-      // var a = '../c/d/main.js'
-      // var b = '/a/b/zhangjing/index.js'
-      // let c = relativeToabsolute(a, b)
-      // console.log(c, '00')
-
     })
   })
+
 }
 
 /**
@@ -62,31 +66,34 @@ function parseImport(nodes: ItemType[], rootPath: any,arrs: Array<any>) {
  * @param {*} nodes
  * @param {*} path
  */
-function findNodes(nodes: Array<ItemType>, path: string) {
-   let node=null
-  function find(nodes: Array<ItemType>){
+function findNodes(nodes: Array<ItemType>, path: string): ItemType | null {
+  let node = null
+  // 里面有/符号的要替换为\, 不然后面全等不了
+  const renamePath = path.replace('/', '\\')
+  function find(nodes: Array<ItemType>) {
     for (let index = 0; index < nodes.length; index++) {
       const element = nodes[index]
       if (element.children) find(element.children)
-      if (element.fullPath === path) node= element
-      else continue
+      // console.log(element.fullPath, '=====', renamePath)
+      if (element.fullPath === renamePath) node = element
     }
   }
-   find(nodes)
+  find(nodes)
   return node
 }
 
-
- /**
-  * @desc: 给文件标记
-  * @author: majun
-  * @param {string} file
-  * @param {string} name
-  */
- function setmark(file:string,name:string) {
-   let fileStr = fs.readFileSync(file, 'utf-8')
-  fileStr + '//' + name
-    fs.writeFile(file, fileStr, { encoding: 'utf8' }, () => {
-      console.log('mark successful-------' + file)
-    })
- }
+/**
+ * @desc: 给文件标记
+ * @author: majun
+ * @param {string} file
+ * @param {string} name
+ */
+function setmark(file: string, name: string) {
+  console.log(file, name)
+  let fileStr = fs.readFileSync(file, 'utf-8')
+  //  console.log(fileStr)
+  fileStr = fileStr + '//' + name+'\n'
+  fs.writeFile(file, fileStr, { encoding: 'utf8' }, () => {
+    console.log('mark successful-------' + file)
+  })
+}

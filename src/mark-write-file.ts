@@ -6,6 +6,9 @@
 *
 *================================================
 */
+import createDebugger from 'debug'
+const debug = createDebugger('mark-write-file')
+  debug.enabled = true
 export default function markWriteFile(){
 
 }
