@@ -99,11 +99,11 @@ async function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) 
                 break
               }
             }
-              debug('sarr[index] 333', sarr[index])
+            debug('sarr[index] 333', sarr[index])
             writeFlag = true
           }
         }
-     debug('sarr[index]222 ', sarr[index])
+        debug('sarr[index]222 ', sarr[index])
         debug('后缀补齐文件: ', changeName)
         imports.push(changeName)
         // 相对路径改绝对路径没有应用场景, 这里只是做测试

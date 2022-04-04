@@ -1,11 +1,11 @@
 /**
-*================================================
-*@date:2022/04/04
-*@author:mj
-*@desc:对打上标记的文件进行分类写入, 分步骤写方法, 虽然对于性能有影响, 但一点点算什么, 能够分步骤调试最好, 不要这个步骤, 直接注释掉这个方法就行
-*
-*================================================
-*/
+ *================================================
+ *@date:2022/04/04
+ *@author:mj
+ *@desc:对打上标记的文件进行分类写入, 分步骤写方法, 虽然对于性能有影响, 但一点点算什么, 能够分步骤调试最好, 不要这个步骤, 直接注释掉这个方法就行
+ *
+ *================================================
+ */
 import createDebugger from 'debug'
 import { findNodes } from './mark-file'
 import fs from 'fs'
@@ -14,14 +14,14 @@ const debug = createDebugger('mark-write-file')
 debug.enabled = true
 
 /**
- * @desc:
+ * @desc:  递归文件子依赖创建文件- 文件外递归
  * @author: majun
  * @param {ItemType} nodes
  * @param {string} name
  * @param {string} path
  * @param {string} path
  */
-export  function markWriteFile(nodes: ItemType[], name: string, path: string, rootPath: string) {
+export function markWriteFile(nodes: ItemType[], name: string, path: string, rootPath: string) {
   debug('入参: ', name, path)
   // 通过文件地址, 找到nodes的依赖地址, 把依赖文件也打标记
   const node = findNodes(nodes, path)
@@ -30,7 +30,7 @@ export  function markWriteFile(nodes: ItemType[], name: string, path: string, ro
     // 得到标记
     const belongTo = node.belongTo
     if (belongTo.length > 0) {
-      setDispFile(node,  name,rootPath)
+      setDispFile(node, name, rootPath)
     }
     // 找到有子文件了,循环它
     for (let index = 0; index < node.imports.length; index++) {
@@ -48,17 +48,17 @@ export  function markWriteFile(nodes: ItemType[], name: string, path: string, ro
 }
 
 /**
- * @desc: 这里创建文件夹和写文件
+ * @desc: 这里递归创建文件夹和写文件-文件内递归
  * @author: majun
  * @param {ItemType} nodes
  * @param {string} name
- * @param {string} rootPath
+ * @param {string} path
  */
-function setDispFile(node: ItemType,name: string, path: string) {
-    debug('setDispFile入参: ', name, path)
+function setDispFile(node: ItemType, name: string, path: string) {
+  debug('setDispFile入参: ', name, path)
   // 1. 依次找到最外层文件夹
   const relative = node.fullPath.replace(path + '\\', '')
-  const foldName=relative.split('\\')
+  const foldName = relative.split('\\')
   debug('relative: ', relative)
   // 文件, copy文件
   if (foldName.indexOf('.') > -1) {
@@ -66,7 +66,13 @@ function setDispFile(node: ItemType,name: string, path: string) {
   } else {
     // 文件夹创建
     setFolder(path + '\\' + name, foldName[0])
-    path = path + '\\' + name+foldName[0]
+    if (path.indexOf(name) > -1) {
+      // 证明已经不是第一次了
+      path = path + '\\' + foldName[0]
+    } else {
+      path = path + '\\' + name + foldName[0]
+    }
+    setDispFile(node, name, path)
   }
 }
 

@@ -7,7 +7,6 @@ import stringToArgs from '../script/cli'
 import handle from '../script/cli/handle'
 import markFile from './mark-file'
 
-
 const options = stringToArgs(process.argv)
 const { ignores: ignore, includes: include } = handle(options)
 /**
@@ -26,7 +25,6 @@ function agmd() {
   changePath(nodes, rootPath)
   //4. 打标记 ------------> 会写(会操作代码)   //5. 分文件 ------------> 会写(会另外生成包文件)
   markFile(nodes, rootPath)
-
 
   //6. 得到md对象(只生成一个md)
   wirteJsNodes(JSON.stringify(nodes), rootPath + '\\readme-file.js')

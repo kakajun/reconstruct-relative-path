@@ -1,17 +1,17 @@
 /**
-*================================================
-*@date:2022/04/04
-*@author:mj
-*@desc:获取文件相关方法
-*
-*================================================
-*/
+ *================================================
+ *@date:2022/04/04
+ *@author:mj
+ *@desc:获取文件相关方法
+ *
+ *================================================
+ */
 import fs from 'fs'
 import path from 'path'
 // import { relativeToabsolute } from './change-path'
 import createDebugger from 'debug'
 const debug = createDebugger('get-file')
- debug.enabled = true
+debug.enabled = true
 /**
  * @description:Gets the header comment of the file  获取文件的头部注释
  * @param {*} file
@@ -40,7 +40,7 @@ export type ItemType = {
   rowSize: number
   fullPath: string
   belongTo: Array<string> // 标记归属设置 分类用
-  imports: Array<string>   // 依赖收集
+  imports: Array<string> // 依赖收集
   children?: ItemType[]
 }
 
@@ -88,8 +88,8 @@ export function getFileNodes(
         isDir,
         level,
         note: '',
-         imports:new Array,
-        belongTo:new Array
+        imports: new Array(),
+        belongTo: new Array()
       } as ItemType
     })
     //Sort folders and files, otherwise the generated will not correspond to the opening order of the editor 对文件夹和文件进行排序,要不然生成的和编辑器打开的顺序不对应
@@ -133,7 +133,7 @@ export function getFileNodes(
  * @param {string} keys
  * @return {*}
  */
-export  function getNote(datas: Array<ItemType>, keys?: string[]) {
+export function getNote(datas: Array<ItemType>, keys?: string[]) {
   const nodes = keys || []
   datas.forEach((obj: ItemType, index: Number) => {
     const last = index === datas.length - 1
@@ -141,8 +141,8 @@ export  function getNote(datas: Array<ItemType>, keys?: string[]) {
       //fold
       getNote(obj.children, nodes)
     }
-     const md = setMd(obj, last)
-     nodes.push(md)
+    const md = setMd(obj, last)
+    nodes.push(md)
   })
   return nodes
 }

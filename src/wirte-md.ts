@@ -1,18 +1,18 @@
 /**
-*================================================
-*@date:2022/04/04
-*@author:mj
-*@desc: 生成md说明文档
-*
-*================================================
-*/
+ *================================================
+ *@date:2022/04/04
+ *@author:mj
+ *@desc: 生成md说明文档
+ *
+ *================================================
+ */
 import fs from 'fs'
 import path from 'path'
 import { getFileNodes, getNote } from './get-file'
 import { ItemType } from './get-file'
 import createDebugger from 'debug'
 const debug = createDebugger('wirte-md')
-  debug.enabled = true
+debug.enabled = true
 type secoutType = { rowTotleNumber: number; sizeTotleNumber: number; coutObj: { [key: string]: number } }
 /**
  * @description:Write the result to JS file 把结果写入到js文件
@@ -65,7 +65,6 @@ function format(num: number) {
   return (num + '').replace(reg, '$&,')
 }
 
-
 /**
  * @description: Generate statistics MD 生成统计md
  * @param {object} option
@@ -92,7 +91,10 @@ Total number of codes: ${format(sizeTotleNumber)} \n`
  * @param {object} option
  * @return {*}
  */
-export function getMd( rootPath:string,option?: { ignore: string[] | undefined; include: string[] | undefined } | undefined) {
+export function getMd(
+  rootPath: string,
+  option?: { ignore: string[] | undefined; include: string[] | undefined } | undefined
+) {
   console.log('\x1B[36m%s\x1B[0m', '*** run location: ', path.resolve('./') + '\n')
   const nodes = getFileNodes(rootPath, option)
   const countMdObj = getCountMd(nodes)
