@@ -44,24 +44,31 @@ export default function markFile(nodes: ItemType[], rootPath: string) {
       let absolutePath = path.replace('@', rootPath)
       // 打标记
       setmark(absolutePath, ele.name)
-      // 标记归属设置
-
-      // 通过文件地址, 找到nodes的依赖地址, 把依赖文件也打标记
-      const node = findNodes(nodes, absolutePath)
-
-      if (node && node.imports&&node.belongTo) {
-        node.belongTo.push(ele.name)
-        // 找到有子文件了,循环它
-        debug(node.imports, '8888')
-        node.imports.forEach((element) => {
-          debug(element, '777222')
-          // 打标记
-          setmark(element, ele.name)
-        })
-      }
+      setNodeMark(nodes, ele.name, absolutePath)
     })
   })
+}
 
+/**
+ * @desc: 分离一个递归调用的mark函数
+ * @author: majun
+ */
+function setNodeMark(nodes: Array<ItemType>, name: string, path: string) {
+  // 通过文件地址, 找到nodes的依赖地址, 把依赖文件也打标记
+  const node = findNodes(nodes, path)
+  if (node && node.imports && node.belongTo) {
+    // 标记归属设置
+    node.belongTo.push(name)
+    // 找到有子文件了,循环它
+    debug(node.imports, '8888')
+    node.imports.forEach((element) => {
+      debug(element, '777222')
+      // 打标记
+      setmark(element, name)
+      // 继续递归,知道子文件没有子文件
+      setNodeMark(nodes, name, element)
+    })
+  }
 }
 
 /**

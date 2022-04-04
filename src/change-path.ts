@@ -146,8 +146,7 @@ export function relativeToabsolute(relative: string, absolute: string) {
       break
     }
   }
-  // console.log(abso.join('/'), 'abso')
-  let str = abso.join('/') + '/' + rela.join('/')
+  let str = abso.join('\\') + '\\' + rela.join('\\')
   return str
 }
 

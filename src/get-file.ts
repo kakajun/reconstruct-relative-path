@@ -54,7 +54,7 @@ export type ItemType = {
   suffix: string
   rowSize: number
   fullPath: string
-  belongTo:[]
+  belongTo:string[]
   imports?: Array<string>
   children?: ItemType[]
 }
