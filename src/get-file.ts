@@ -54,7 +54,7 @@ export type ItemType = {
   suffix: string
   rowSize: number
   fullPath: string
-  belongTo:string[]
+  belongTo?: Array<string>
   imports?: Array<string>
   children?: ItemType[]
 }
@@ -102,7 +102,8 @@ export function getFileNodes(
         name: item,
         isDir,
         level,
-        note: ''
+        note: '',
+        belongTo: ['']
       } as ItemType
     })
     //Sort folders and files, otherwise the generated will not correspond to the opening order of the editor 对文件夹和文件进行排序,要不然生成的和编辑器打开的顺序不对应

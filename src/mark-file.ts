@@ -37,8 +37,9 @@ export default function markFile(nodes: ItemType[], rootPath: string) {
     // 这里循环打标记的路由
     ele.router.forEach((obj: { component: any }) => {
       const path = obj.component
+        const renamePath = path.replace(/\//g, '\\')
       // 路径转绝对路径
-      let absolutePath = path.replace('@', rootPath)
+      let absolutePath = renamePath.replace('@', rootPath)
       // 打标记
       setmark(absolutePath, ele.name)
       setNodeMark(nodes, ele.name, absolutePath)
@@ -51,18 +52,27 @@ export default function markFile(nodes: ItemType[], rootPath: string) {
  * @author: majun
  */
 function setNodeMark(nodes: Array<ItemType>, name: string, path: string) {
+   debug('入参: ', name, path)
   // 通过文件地址, 找到nodes的依赖地址, 把依赖文件也打标记
   const node = findNodes(nodes, path)
+    // debug('查找的node: ', node)
   if (node && node.imports && node.belongTo) {
     // 标记归属设置
     node.belongTo.push(name)
     // 找到有子文件了,循环它
     node.imports.forEach((element) => {
-      debug('依赖文件: ', node.imports, element)
-      // 打标记
-      setmark(element, name)
-      // 继续递归,直到子文件没有子文件
-      setNodeMark(nodes, name, element)
+      debug('依赖文件: ', element)
+      // 如果文件存在
+      if (fs.existsSync(path)) {
+        // 打标记
+        setmark(element, name)
+        // 继续递归,直到子文件没有子文件
+        setNodeMark(nodes, name, element)
+      } else {
+        console.error('文件不存在', path)
+      }
+
+
     })
   }
 }
@@ -76,7 +86,7 @@ function setNodeMark(nodes: Array<ItemType>, name: string, path: string) {
 function findNodes(nodes: Array<ItemType>, path: string): ItemType | null {
   let node = null
   // 里面有/符号的要替换为\, 不然后面全等不了
-  const renamePath = path.replace('/', '\\')
+  const renamePath = path.replace(/\//g, '\\')
   function find(nodes: Array<ItemType>) {
     for (let index = 0; index < nodes.length; index++) {
       const element = nodes[index]

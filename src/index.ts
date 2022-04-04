@@ -15,11 +15,12 @@ const { ignores: ignore, includes: include } = handle(options)
  * @return {*}
  */
 function agmd() {
-  let rootPath = path.resolve('./unuse')
+  let rootPath = path.resolve('.\\unuse')
   const { md, nodes } = getMd(rootPath, { ignore, include })
   // 得到md文档
   console.log('\x1B[36m%s\x1B[0m', '*** location: ', `${rootPath}\\readme-md.md`)
   wirteMd(md, `${rootPath}\\readme-md.md`)
+
   // 更改所有为绝对路径
   changePath(nodes, rootPath)
   // 打标记

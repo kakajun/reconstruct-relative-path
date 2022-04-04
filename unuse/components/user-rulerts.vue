@@ -27,10 +27,7 @@
   </div>
 </template>
 <script lang="ts">
-// import { SketchRule } from 'vue3-sketch-ruler'
-// import 'vue3-sketch-ruler/lib/style.css'
-// import { SketchRule } from '../../lib/index.es'
-// import '/lib/style.css'
+
 import {
   computed,
   defineComponent,
@@ -39,7 +36,7 @@ import {
   onMounted,
   nextTick,
 } from "vue";
-import { SketchRule } from "../../src/index"; // 这里可以换成打包后的
+import { SketchRule } from "./user-ruler"; // 这里可以换成打包后的
 
 const rectWidth = 600;
 const rectHeight = 320;
@@ -196,4 +193,3 @@ body * {
   transform-origin: 50% 0;
 }
 </style>
-
