@@ -6,7 +6,7 @@ import { changePath, wirteJsNodes } from './change-path'
 import stringToArgs from '../script/cli'
 import handle from '../script/cli/handle'
 import markFile from './mark-file'
-import markWriteFile from './mark-write-file'
+
 
 const options = stringToArgs(process.argv)
 const { ignores: ignore, includes: include } = handle(options)
@@ -24,10 +24,10 @@ function agmd() {
   wirteMd(md, `${rootPath}\\readme-md.md`)
   //3. 更改所有为绝对路径+ 后缀补全------------>会写(会操作代码)
   changePath(nodes, rootPath)
-  //4. 打标记 ------------> 不写
+  //4. 打标记 ------------> 会写(会操作代码)   //5. 分文件 ------------> 会写(会另外生成包文件)
   markFile(nodes, rootPath)
-  //5. 分文件 ------------> 会写(会另外生成包文件)
-  markWriteFile()
+
+
   //6. 得到md对象(只生成一个md)
   wirteJsNodes(JSON.stringify(nodes), rootPath + '\\readme-file.js')
 }

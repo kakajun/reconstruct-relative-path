@@ -8,6 +8,7 @@
  */
 import fs from 'fs'
 import { ItemType } from './get-file'
+import { setFolder, markWriteFile } from './mark-write-file'
 import createDebugger from 'debug'
 const debug = createDebugger('mark-file')
 debug.enabled = true
@@ -42,7 +43,12 @@ export default function markFile(nodes: ItemType[], rootPath: string) {
       let absolutePath = renamePath.replace('@', rootPath)
       // 打标记
       setmark(absolutePath, ele.name)
+      // 递归打上子集所有
       setNodeMark(nodes, ele.name, absolutePath)
+      // 建分类包
+      setFolder(rootPath, ele.name)
+      // 对打上标记的文件进行分类写入
+      markWriteFile(nodes, ele.name, absolutePath, rootPath)
     })
   })
 }
@@ -82,7 +88,7 @@ function setNodeMark(nodes: Array<ItemType>, name: string, path: string) {
  * @param {*} nodes
  * @param {*} path
  */
-function findNodes(nodes: Array<ItemType>, path: string): ItemType | null {
+export function findNodes(nodes: Array<ItemType>, path: string): ItemType | null {
   let node = null
   // 里面有/符号的要替换为\, 不然后面全等不了
   const renamePath = path.replace(/\//g, '\\')
