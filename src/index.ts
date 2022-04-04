@@ -6,6 +6,7 @@ import { changePath, wirteJsNodes } from './change-path'
 import stringToArgs from '../script/cli'
 import handle from '../script/cli/handle'
 import markFile from './mark-file'
+import markWriteFile from './mark-write-file'
 const options = stringToArgs(process.argv)
 const { ignores: ignore, includes: include } = handle(options)
 /**
@@ -15,9 +16,9 @@ const { ignores: ignore, includes: include } = handle(options)
  */
 function agmd() {
   let rootPath = path.resolve('./unuse')
-  const { md, nodes } = getMd(rootPath,{ ignore, include })
+  const { md, nodes } = getMd(rootPath, { ignore, include })
   // 得到md文档
-  console.log('\x1B[36m%s\x1B[0m', '*** location: ', `${path.resolve('./')}\\readme-md.md`)
+  console.log('\x1B[36m%s\x1B[0m', '*** location: ', `${rootPath}\\readme-md.md`)
   wirteMd(md, `${rootPath}\\readme-md.md`)
   // 得到md对象
   wirteJsNodes(JSON.stringify(nodes), rootPath + '\\readme-file.js')
@@ -25,5 +26,9 @@ function agmd() {
   changePath(nodes, rootPath)
   // 打标记
   markFile()
+  // 打标记
+  markFile()
+  // 分文件
+  markWriteFile()
 }
 agmd()

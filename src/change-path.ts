@@ -63,11 +63,6 @@ function witeFile(rootPath: string, file: string) {
     }
   })
   if (writeFlag) {
-    console.log(fileStr)
-    for (let index = 0; index < sarr.length; index++) {
-      const element = sarr[index]
-      console.log(element)
-    }
     fileStr = sarr.join('\n')
     // 异步写入数据到文件
     // console.log(str)
