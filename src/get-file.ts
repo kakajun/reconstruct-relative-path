@@ -8,7 +8,7 @@
 */
 import fs from 'fs'
 import path from 'path'
-import { relativeToabsolute } from './change-path'
+// import { relativeToabsolute } from './change-path'
 import createDebugger from 'debug'
 const debug = createDebugger('get-file')
  debug.enabled = true
@@ -24,19 +24,19 @@ function getFile(file: string) {
   const imports: string[] = []
   const rowSize = sarr.length
   // 这里获取每个文件的import路径
-  sarr.forEach((ele) => {
-    const str = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
-    if (str && str[1]) {
-      // 这里存绝对路径
-       let absolutetPath=''
-      if (str[1].indexOf('@') === -1 && (str[1].indexOf('./') > -1 || str[1].indexOf('../') > -1)) {
-          // 只有相对路径才会保存,那么首先得把绝对路径都转为相对路径
-          absolutetPath = relativeToabsolute(str[1], file)
-          // debug(absolutetPath)
-             imports.push(absolutetPath)
-        }
-    }
-  })
+  // sarr.forEach((ele) => {
+  //   const str = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
+  //   if (str && str[1]) {
+  //     // 这里存绝对路径
+  //      let absolutetPath=''
+  //     if (str[1].indexOf('@') === -1 && (str[1].indexOf('./') > -1 || str[1].indexOf('../') > -1)) {
+  //         // 只有相对路径才会保存,那么首先得把绝对路径都转为相对路径
+  //         absolutetPath = relativeToabsolute(str[1], file)
+  //         // debug(absolutetPath)
+  //            imports.push(absolutetPath)
+  //       }
+  //   }
+  // })
   const f =
     sarr[0].indexOf('eslint') === -1 &&
     (sarr[0].indexOf('-->') > -1 || sarr[0].indexOf('*/') > -1 || sarr[0].indexOf('//') > -1)

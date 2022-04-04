@@ -7,27 +7,28 @@ import stringToArgs from '../script/cli'
 import handle from '../script/cli/handle'
 import markFile from './mark-file'
 import markWriteFile from './mark-write-file'
+
 const options = stringToArgs(process.argv)
 const { ignores: ignore, includes: include } = handle(options)
 /**
- * @description:Automatic generation of the whole process  自动生成全流程
+ * @description:Automatic generation of the whole process  自动生成全流程, 注意顺序不能乱
  * @param {*}
  * @return {*}
  */
 function agmd() {
   let rootPath = path.resolve('.\\unuse')
+  //1. 这里只读文件, ------------>不写
   const { md, nodes } = getMd(rootPath, { ignore, include })
-  // 得到md文档
+  //2.  得到md文档,------------>会写(只生成一个md)
   console.log('\x1B[36m%s\x1B[0m', '*** location: ', `${rootPath}\\readme-md.md`)
   wirteMd(md, `${rootPath}\\readme-md.md`)
-
-  // 更改所有为绝对路径
+  //3. 更改所有为绝对路径+ 后缀补全------------>会写(会操作代码)
   changePath(nodes, rootPath)
-  // 打标记
+  //4. 打标记 ------------> 不写
   markFile(nodes, rootPath)
-  // 分文件
+  //5. 分文件 ------------> 会写(会另外生成包文件)
   markWriteFile()
-  // 得到md对象
+  //6. 得到md对象(只生成一个md)
   wirteJsNodes(JSON.stringify(nodes), rootPath + '\\readme-file.js')
 }
 agmd()

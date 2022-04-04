@@ -1,17 +1,17 @@
 /**
-*================================================
-*@date:2022/04/04
-*@author:mj
-*@desc:整个文件主要把绝对路径修改为相对路径
-*
-*================================================
-*/
+ *================================================
+ *@date:2022/04/04
+ *@author:mj
+ *@desc:整个文件主要把绝对路径修改为相对路径
+ *
+ *================================================
+ */
 import { ItemType } from './get-file'
 import fs from 'fs'
 import path from 'path'
 import createDebugger from 'debug'
 const debug = createDebugger('change-path')
-  debug.enabled = true
+debug.enabled = true
 /**
  * @desc: 递归循环所有文件
  * @author: majun
@@ -24,7 +24,8 @@ export function changePath(nodes: Array<ItemType>, rootPath: string) {
       if (ele.children) {
         getNode(ele.children)
       } else {
-        witeFile(rootPath, ele.fullPath)
+        // TODO 这里先写死绝对转相对, 后面如果想相对都转绝对, 可以改这里
+        witeFile(rootPath, ele, true)
       }
     })
   }
@@ -37,15 +38,16 @@ export function changePath(nodes: Array<ItemType>, rootPath: string) {
  * @param {string} rootPath  根地址
  * @param {string} file  目标地址
  */
-function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
-  let fileStr = fs.readFileSync(file, 'utf-8')
+function witeFile(rootPath: string, node: ItemType, isRelative?: Boolean) {
+  const { fullPath } = node
+  let fileStr = fs.readFileSync(fullPath, 'utf-8')
   let writeFlag = false // 如果啥都没改, 不更新文件
   // fileStr = '// 我加注释 \n' + fileStr
   const sarr = fileStr.split(/[\n]/g)
   sarr.forEach((ele, index) => {
     // 注释的不转,其他公共也不转
     const ignore = ['//', '@xiwicloud/components', '@xiwicloud/lims']
-    const flag=ignore.some((item) => ele.indexOf(item) < 0)
+    const flag = ignore.some((item) => ele.indexOf(item) < 0)
     if (flag) {
       const impStr = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
       // 没有import的不转
@@ -53,20 +55,38 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
         let filePath = impStr[1]
         // 如果有@符号的, 并且忽略文件的
         if (isRelative) {
-               if (filePath.indexOf('@') > -1) {
-                 // debug(filePath)
-                 let relative = filePath.replace('@', rootPath)
-                 let relatPath = absoluteTorelative(relative, file)
-                 // debug(relatPath)
-                 // 把改好的替换回去
-                 sarr[index] = ele.replace(filePath, relatPath)
-                 writeFlag = true
-               }
+          if (filePath.indexOf('@') > -1) {
+            // debug(filePath)
+            let relative = filePath.replace('@', rootPath)
+            let relatPath = absoluteTorelative(relative, fullPath)
+            // debug(relatPath)
+            // 把改好的替换回去
+            sarr[index] = ele.replace(filePath, relatPath)
+            writeFlag = true
+          }
+          const i = fullPath.lastIndexOf('.')
+          const lastName = fullPath.substring(i)
+          // 假如没有后缀,补上
+          if (!lastName) {
+            // 获取绝对路径
+            const suffix = ['.js', '.vue', '/index.js', '/index.vue']
+            let absolutetPath = relativeToabsolute(filePath, fullPath)
+            for (let index = 0; index < suffix.length; index++) {
+              const fixStr = suffix[index]
+              if (fs.existsSync(absolutetPath + fixStr)) {
+                // 把改好的替换回去
+                debug('补全的文件: ', absolutetPath + fixStr)
+                sarr[index] = absolutetPath + fixStr
+                break
+              }
+            }
+          }
         }
+
         // 相对路径改绝对路径没有应用场景, 这里只是做测试
         // else {
         //   if (filePath.indexOf('@') === -1 && (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1)) {
-        //     let absolutetPath = relativeToabsolute(filePath, file)
+        //     let absolutetPath = relativeToabsolute(filePath, fullPath)
         //     debug(absolutetPath)
         //     // 把改好的替换回去
         //     sarr[index] = absolutetPath
@@ -80,8 +100,8 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
     fileStr = sarr.join('\n')
     // 异步写入数据到文件
     // debug(str)
-    fs.writeFile(file, fileStr, { encoding: 'utf8' }, () => {
-      console.log('Write successful-------' + file)
+    fs.writeFile(fullPath, fileStr, { encoding: 'utf8' }, () => {
+      console.log('Write successful-------' + fullPath)
     })
   }
 }
@@ -97,7 +117,7 @@ function absoluteTorelative(relative: string, absolute: string) {
   // debug(rela,relative, "5")
   rela.shift()
   let abso = absolute.split('/')
-    //  debug(abso, '6')
+  //  debug(abso, '6')
   abso.shift()
   let num = 0
   for (let i = 0; i < rela.length; i++) {
@@ -130,7 +150,7 @@ function absoluteTorelative(relative: string, absolute: string) {
  */
 export function relativeToabsolute(relative: string, absolute: string) {
   debug(absolute, '00')
-  const reg = /\\|\//g   //用 \或者 / 进行分割
+  const reg = /\\|\//g //用 \或者 / 进行分割
   let rela = relative.split(reg)
   let abso = absolute.split(reg)
   // debug(rela, 'rela')
