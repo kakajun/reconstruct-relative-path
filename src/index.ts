@@ -25,7 +25,7 @@ function agmd() {
   // 更改所有为绝对路径
   changePath(nodes, rootPath)
   // 打标记
-  markFile()
+  markFile(nodes, rootPath)
   // 分文件
   markWriteFile()
 }

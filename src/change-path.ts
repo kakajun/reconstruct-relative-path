@@ -60,15 +60,17 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
                  sarr[index] = ele.replace(filePath, relatPath)
                  writeFlag = true
                }
-        } else {
-          if (filePath.indexOf('@') === -1 && (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1)) {
-            let absolutetPath = relativeToabsolute(filePath, file)
-            // console.log(relatPath)
-            // 把改好的替换回去
-            sarr[index] = ele.replace(filePath, absolutetPath)
-            writeFlag = true
-          }
         }
+        // 相对路径改绝对路径没有应用场景, 这里只是做测试
+        // else {
+        //   if (filePath.indexOf('@') === -1 && (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1)) {
+        //     let absolutetPath = relativeToabsolute(filePath, file)
+        //     console.log(absolutetPath)
+        //     // 把改好的替换回去
+        //     sarr[index] = absolutetPath
+        //     // writeFlag = true
+        //   }
+        // }
       }
     }
   })
@@ -90,8 +92,10 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
  */
 function absoluteTorelative(relative: string, absolute: string) {
   let rela = relative.split('/')
+  // console.log(rela,relative, "5")
   rela.shift()
   let abso = absolute.split('/')
+    //  console.log(abso, '6')
   abso.shift()
   let num = 0
   for (let i = 0; i < rela.length; i++) {
@@ -114,7 +118,6 @@ function absoluteTorelative(relative: string, absolute: string) {
   return str
 }
 
-
 /**
  * @desc: 相对路径转绝对路径
  * @author: majun
@@ -124,23 +127,27 @@ function absoluteTorelative(relative: string, absolute: string) {
  * @param {string} absolute
  */
 export function relativeToabsolute(relative: string, absolute: string) {
-  let rela = relative.split('/')
-  let abso = absolute.split('/')
+  console.log(absolute, '00')
+  const reg = /\\|\//g   //用 \或者 / 进行分割
+  let rela = relative.split(reg)
+  let abso = absolute.split(reg)
+  // console.log(rela, 'rela')
+  // console.log(abso, 'abso')
   for (let j = 0; j < rela.length - 1; j++) {
-  if (rela[j] === '..') {
-     abso.pop()
-     abso.pop()
-    rela.shift()
-  } else if (rela[j] === '.') {
-    abso.pop()
-    rela.shift();
-    break
+    if (rela[j] === '..') {
+      abso.pop()
+      abso.pop()
+      rela.shift()
+    } else if (rela[j] === '.') {
+      abso.pop()
+      rela.shift()
+      break
+    }
   }
-}
-  let str =abso.join('/')+'/' +rela.join('/')
+  // console.log(abso.join('/'), 'abso')
+  let str = abso.join('/') + '/' + rela.join('/')
   return str
 }
-
 
 /**
  * @description: Write the result to JS file 把结果写入到js文件

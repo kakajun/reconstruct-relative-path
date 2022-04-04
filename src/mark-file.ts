@@ -8,7 +8,10 @@
 */
 // import { getFileNodes } from './get-file'
 // import { relativeToabsolute } from './change-path'
-// import fs from 'fs'
+import fs from 'fs'
+
+import { ItemType } from "./get-file";
+
 // import path from 'path'
 const classifiedRouting = [
   {
@@ -17,58 +20,73 @@ const classifiedRouting = [
       {
         path: '/about',
         name: 'about',
-        component:'./App.vue'
+        // 路由必须都是绝对路径
+        component:'@/App.vue'
       }
     ]
   }
 ]
-export default function markFile(){
+export default function markFile(nodes: ItemType[], rootPath: string) {
   //1. 整理要分类的路由,搞个数组对象分类
   console.log(classifiedRouting)
   //2. 循环解析import 找文件(如果子文件有依赖,继续找)
-parseImport(classifiedRouting)
+  parseImport(nodes, rootPath,classifiedRouting)
   //3. 给尾部打标记
 }
 
-function parseImport(arrs: Array<any>) {
+function parseImport(nodes: ItemType[], rootPath: any,arrs: Array<any>) {
   arrs.forEach((ele) => {
-    ele.router.forEach((obj: { component: any; }) => {
+    ele.router.forEach((obj: { component: any }) => {
       const path = obj.component
-      console.log(path, '777')
+      // 路径转绝对路径
+      let absolutePath = path.replace('@', rootPath)
+      // 打标记
+      setmark(absolutePath, ele.name)
+      // 通过文件地址, 找到nodes的依赖地址, 把依赖文件也打标记
+      const node = findNodes(nodes, absolutePath)
+      if (node) {
+      }
+      // console.log(path, '777')
       // var a = '../c/d/main.js'
       // var b = '/a/b/zhangjing/index.js'
       // let c = relativeToabsolute(a, b)
       // console.log(c, '00')
-      // 加载文件
-      // readFile(path)
+
     })
   })
 }
 
+/**
+ * @desc: 递归通过文件全名找节点
+ * @author: majun
+ * @param {*} nodes
+ * @param {*} path
+ */
+function findNodes(nodes: Array<ItemType>, path: string) {
+   let node=null
+  function find(nodes: Array<ItemType>){
+    for (let index = 0; index < nodes.length; index++) {
+      const element = nodes[index]
+      if (element.children) find(element.children)
+      if (element.fullPath === path) node= element
+      else continue
+    }
+  }
+   find(nodes)
+  return node
+}
 
-//  function readFile(file:string) {
-//    let fileStr = fs.readFileSync(file, 'utf-8')
-//    let writeFlag = false // 如果啥都没改, 不更新文件
-//    // fileStr = '// 我加注释 \n' + fileStr
-//    const sarr = fileStr.split(/[\n]/g)
-//    sarr.forEach((ele, index) => {
-//      // 注释的不转,其他公共也不转
-//      const ignore = ['//', '@xiwicloud/components', '@xiwicloud/lims']
-//      const flag = ignore.some((item) => ele.indexOf(item) < 0)
-//      if (flag) {
-//        const impStr = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
-//        // 没有import的不转
-//        if (impStr && impStr[1]) {
-//          let filePath = impStr[1]
-//          // 如果有@符号的, 并且忽略文件的
-//          if (filePath.indexOf('@') > -1) {
 
-//            writeFlag = true
-//          }
-//        }
-//      }
-//    })
-//    if (writeFlag) {
-
-//    }
-//  }
+ /**
+  * @desc: 给文件标记
+  * @author: majun
+  * @param {string} file
+  * @param {string} name
+  */
+ function setmark(file:string,name:string) {
+   let fileStr = fs.readFileSync(file, 'utf-8')
+  fileStr + '//' + name
+    fs.writeFile(file, fileStr, { encoding: 'utf8' }, () => {
+      console.log('mark successful-------' + file)
+    })
+ }

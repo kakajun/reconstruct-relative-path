@@ -8,12 +8,13 @@
 */
 import fs from 'fs'
 import path from 'path'
+import { relativeToabsolute } from './change-path'
 /**
  * @description:Gets the header comment of the file  获取文件的头部注释
  * @param {*} file
  * @return {*}
  */
-function getFile(file: fs.PathOrFileDescriptor) {
+function getFile(file: string) {
   const str = fs.readFileSync(file, 'utf-8')
   const size = str.length
   const sarr = str.split(/[\n]/g)
@@ -23,7 +24,14 @@ function getFile(file: fs.PathOrFileDescriptor) {
   sarr.forEach((ele) => {
     const str = ele.match(/import.*from [\"|\'](.*)[\'|\"]/)
     if (str && str[1]) {
-      imports.push(str[1])
+      // 这里存绝对路径
+       let absolutetPath=''
+      if (str[1].indexOf('@') === -1 && (str[1].indexOf('./') > -1 || str[1].indexOf('../') > -1)) {
+          // 只有相对路径才会保存,那么首先得把绝对路径都转为相对路径
+          absolutetPath = relativeToabsolute(str[1], file)
+          // console.log(absolutetPath)
+             imports.push(absolutetPath)
+        }
     }
   })
   const f =
