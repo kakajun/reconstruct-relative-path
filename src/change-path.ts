@@ -54,10 +54,10 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
         // 如果有@符号的, 并且忽略文件的
         if (isRelative) {
                if (filePath.indexOf('@') > -1) {
-                 // console.log(filePath)
+                 // debug(filePath)
                  let relative = filePath.replace('@', rootPath)
                  let relatPath = absoluteTorelative(relative, file)
-                 // console.log(relatPath)
+                 // debug(relatPath)
                  // 把改好的替换回去
                  sarr[index] = ele.replace(filePath, relatPath)
                  writeFlag = true
@@ -67,7 +67,7 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
         // else {
         //   if (filePath.indexOf('@') === -1 && (filePath.indexOf('./') > -1 || filePath.indexOf('../') > -1)) {
         //     let absolutetPath = relativeToabsolute(filePath, file)
-        //     console.log(absolutetPath)
+        //     debug(absolutetPath)
         //     // 把改好的替换回去
         //     sarr[index] = absolutetPath
         //     // writeFlag = true
@@ -79,7 +79,7 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
   if (writeFlag) {
     fileStr = sarr.join('\n')
     // 异步写入数据到文件
-    // console.log(str)
+    // debug(str)
     fs.writeFile(file, fileStr, { encoding: 'utf8' }, () => {
       console.log('Write successful-------' + file)
     })
@@ -94,10 +94,10 @@ function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
  */
 function absoluteTorelative(relative: string, absolute: string) {
   let rela = relative.split('/')
-  // console.log(rela,relative, "5")
+  // debug(rela,relative, "5")
   rela.shift()
   let abso = absolute.split('/')
-    //  console.log(abso, '6')
+    //  debug(abso, '6')
   abso.shift()
   let num = 0
   for (let i = 0; i < rela.length; i++) {
@@ -129,12 +129,12 @@ function absoluteTorelative(relative: string, absolute: string) {
  * @param {string} absolute
  */
 export function relativeToabsolute(relative: string, absolute: string) {
-  console.log(absolute, '00')
+  debug(absolute, '00')
   const reg = /\\|\//g   //用 \或者 / 进行分割
   let rela = relative.split(reg)
   let abso = absolute.split(reg)
-  // console.log(rela, 'rela')
-  // console.log(abso, 'abso')
+  // debug(rela, 'rela')
+  // debug(abso, 'abso')
   for (let j = 0; j < rela.length - 1; j++) {
     if (rela[j] === '..') {
       abso.pop()

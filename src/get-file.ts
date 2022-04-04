@@ -32,7 +32,7 @@ function getFile(file: string) {
       if (str[1].indexOf('@') === -1 && (str[1].indexOf('./') > -1 || str[1].indexOf('../') > -1)) {
           // 只有相对路径才会保存,那么首先得把绝对路径都转为相对路径
           absolutetPath = relativeToabsolute(str[1], file)
-          // console.log(absolutetPath)
+          // debug(absolutetPath)
              imports.push(absolutetPath)
         }
     }

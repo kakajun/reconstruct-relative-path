@@ -6,10 +6,7 @@
  *
  *================================================
  */
-// import { getFileNodes } from './get-file'
-// import { relativeToabsolute } from './change-path'
 import fs from 'fs'
-
 import { ItemType } from './get-file'
 import createDebugger from 'debug'
 const debug = createDebugger('mark-file')
@@ -60,12 +57,11 @@ function setNodeMark(nodes: Array<ItemType>, name: string, path: string) {
     // 标记归属设置
     node.belongTo.push(name)
     // 找到有子文件了,循环它
-    debug(node.imports, '8888')
     node.imports.forEach((element) => {
-      debug(element, '777222')
+      debug('依赖文件: ', node.imports, element)
       // 打标记
       setmark(element, name)
-      // 继续递归,知道子文件没有子文件
+      // 继续递归,直到子文件没有子文件
       setNodeMark(nodes, name, element)
     })
   }
@@ -85,7 +81,7 @@ function findNodes(nodes: Array<ItemType>, path: string): ItemType | null {
     for (let index = 0; index < nodes.length; index++) {
       const element = nodes[index]
       if (element.children) find(element.children)
-      // console.log(element.fullPath, '=====', renamePath)
+      // debug(element.fullPath, '=====', renamePath)
       if (element.fullPath === renamePath) node = element
     }
   }
@@ -100,11 +96,10 @@ function findNodes(nodes: Array<ItemType>, path: string): ItemType | null {
  * @param {string} name
  */
 function setmark(file: string, name: string) {
-  console.log(file, name)
+  debug(file, name)
   let fileStr = fs.readFileSync(file, 'utf-8')
-  //  console.log(fileStr)
   fileStr = fileStr + '//' + name+'\n'
   fs.writeFile(file, fileStr, { encoding: 'utf8' }, () => {
-    console.log('mark successful-------' + file)
+    debug('mark successful-------' + file)
   })
 }
