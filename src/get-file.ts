@@ -49,14 +49,14 @@ export type ItemType = {
 
 /**
  * @description:Generate node information for all files 生成所有文件的node信息
+ * @param {*} dir   要解析的路径
  * @param {Array} nodes
- * @param {*} dir
  * @param {Number} level
  * @return {*}
  */
 export function getFileNodes(
-  option: { ignore: string[] | undefined; include: string[] | undefined } | undefined,
   dir = path.resolve('./'),
+  option?: { ignore: string[] | undefined; include: string[] | undefined } | undefined,
   nodes: Array<ItemType> = [],
   level = 0
 ): Array<ItemType> {
@@ -109,7 +109,7 @@ export function getFileNodes(
       const isDir = fs.lstatSync(fullPath).isDirectory()
       if (isDir) {
         //recursion 递归
-        getFileNodes(option, fullPath, (item.children = []), level + 1)
+        getFileNodes(fullPath, option, (item.children = []), level + 1)
         nodes.push(item)
       } else {
         const i = fullPath.lastIndexOf('.')

@@ -35,7 +35,7 @@ export function changePath(nodes: Array<ItemType>, rootPath: string) {
  * @param {string} rootPath  根地址
  * @param {string} file  目标地址
  */
-function witeFile(rootPath: string, file: string) {
+function witeFile(rootPath: string, file: string, isRelative?:Boolean) {
   let fileStr = fs.readFileSync(file, 'utf-8')
   let writeFlag = false // 如果啥都没改, 不更新文件
   // fileStr = '// 我加注释 \n' + fileStr
@@ -50,15 +50,28 @@ function witeFile(rootPath: string, file: string) {
       if (impStr && impStr[1]) {
         let filePath = impStr[1]
         // 如果有@符号的, 并且忽略文件的
-        if (filePath.indexOf('@') > -1) {
-          // console.log(filePath)
-          let relative = filePath.replace('@', rootPath)
-          let relatPath = relativeDir(relative, file)
-          // console.log(relatPath)
-          // 把改好的替换回去
-          sarr[index] = ele.replace(filePath, relatPath)
-          writeFlag = true
+        if (isRelative) {
+               if (filePath.indexOf('@') > -1) {
+                 // console.log(filePath)
+                 let relative = filePath.replace('@', rootPath)
+                 let relatPath = absoluteTorelative(relative, file)
+                 // console.log(relatPath)
+                 // 把改好的替换回去
+                 sarr[index] = ele.replace(filePath, relatPath)
+                 writeFlag = true
+               }
+        } else {
+          if (filePath.indexOf('@')===-1) {
+            // console.log(filePath)
+            let relative = filePath.replace('@', rootPath)
+            let relatPath = absoluteTorelative(relative, file)
+            // console.log(relatPath)
+            // 把改好的替换回去
+            sarr[index] = ele.replace(filePath, relatPath)
+            writeFlag = true
+          }
         }
+
       }
     }
   })
@@ -73,12 +86,12 @@ function witeFile(rootPath: string, file: string) {
 }
 
 /**
- * @desc: 或取相对路径
+ * @desc: 绝对路径转相对路径
  * @author: majun
  * @param {*} relative
  * @param {*} absolute
  */
-function relativeDir(relative: string, absolute: string) {
+function absoluteTorelative(relative: string, absolute: string) {
   let rela = relative.split('/')
   rela.shift()
   let abso = absolute.split('/')
@@ -103,6 +116,34 @@ function relativeDir(relative: string, absolute: string) {
   str += rela.join('/')
   return str
 }
+
+
+/**
+ * @desc: 相对路径转绝对路径
+ * @author: majun
+ *     let a = '../c/d/main.js'
+    let b = '/a/b/zhangjing/index.js'
+ * @param {string} relative
+ * @param {string} absolute
+ */
+export function relativeToabsolute(relative: string, absolute: string) {
+  let rela = relative.split('/')
+  let abso = absolute.split('/')
+  for (let j = 0; j < rela.length - 1; j++) {
+  if (rela[j] === '..') {
+     abso.pop()
+     abso.pop()
+    rela.shift()
+  } else if (rela[j] === '.') {
+    abso.pop()
+    rela.shift();
+    break
+  }
+}
+  let str =abso.join('/')+'/' +rela.join('/')
+  return str
+}
+
 
 /**
  * @description: Write the result to JS file 把结果写入到js文件

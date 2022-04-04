@@ -22,10 +22,8 @@ function agmd() {
   wirteMd(md, `${rootPath}\\readme-md.md`)
   // 得到md对象
   wirteJsNodes(JSON.stringify(nodes), rootPath + '\\readme-file.js')
-  // 更改所有绝对路径
+  // 更改所有为绝对路径
   changePath(nodes, rootPath)
-  // 打标记
-  markFile()
   // 打标记
   markFile()
   // 分文件
