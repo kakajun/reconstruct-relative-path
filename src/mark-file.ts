@@ -33,6 +33,7 @@ const classifiedRouting = [
  * @param {string} rootPath
  */
 export default function markFile(nodes: ItemType[], rootPath: string) {
+
   // 外层循环要分类的路由
   classifiedRouting.forEach((ele) => {
     // 这里循环打标记的路由

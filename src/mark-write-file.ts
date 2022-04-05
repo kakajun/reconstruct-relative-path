@@ -68,7 +68,12 @@ function setDispFile(path: string, name: string, rootPath: string, restName?: st
   debug('foldNameArrs: ', foldNameArrs)
   //如果是文件, copy文件
   if (foldNameArrs[0].indexOf('.') > -1) {
-    copyFile(path, name, foldNameArrs[0])
+    if (seconFlag) {
+      copyFile(path, name, foldNameArrs[0]);
+    } else {
+      const newPath = rootPath + '\\' + name + '\\' + relative
+      copyFile(newPath, name, foldNameArrs[0])
+    }
   } else {
     // 下面处理文件夹递归关系
     if (seconFlag) {
@@ -91,17 +96,28 @@ function setDispFile(path: string, name: string, rootPath: string, restName?: st
 /**
  * @desc: 读取原文件,写入到新地址
  * @author: majun
- * @param {string} path
+ * @param {string} path  path 一定是带name的新地址
  * @param {string} name
- * @param {string} nuePath
+ * @param {string} filName 要copy的文件名
  */
 export function copyFile(path: string, name: string, filName: string) {
   debug('copyFile入参: ', name, path, filName)
-  const originPath = path.replace(name + '\\', '')
+  const origin = path.replace(name + '\\', '')
+  const flag = path.indexOf('.')>-1
+  const originPath = flag ? origin : origin + '\\' + filName
+  const writeFileName = flag ? path : path + '\\' + filName
+  debug('originPath: ', originPath)
+   debug('写入文件: ', writeFileName)
   const str = fs.readFileSync(originPath, 'utf-8')
+  console.log(str, "666")
+      const str2 = fs.readFileSync(
+        'D:\\worker\\reconstruct-relative-path\\unuse\\components\\test\\deep\\user-ruler.vue',
+        'utf-8'
+      )
+      console.log(str2.toString(), '21321')
   // 异步写入数据到文件
-  fs.writeFile(path + filName, str, { encoding: 'utf8' }, () => {
-    console.log('newfile write successful', path + filName)
+  fs.writeFile(writeFileName, str, { encoding: 'utf8' }, () => {
+    console.log('newfile write successful', writeFileName)
   })
 }
 
