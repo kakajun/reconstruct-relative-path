@@ -36,7 +36,7 @@ import {
   onMounted,
   nextTick,
 } from "vue";
-import { SketchRule } from "./test/user-ruler.vue"; // 这里可以换成打包后的
+import { SketchRule } from "./test/deep/user-ruler.vue"; // 这里可以换成打包后的
 import { HelloWorld } from "./test2/HelloWorld.vue"; // 这里可以换成打包后的
 const rectWidth = 600;
 const rectHeight = 320;
@@ -193,3 +193,4 @@ body * {
   transform-origin: 50% 0;
 }
 </style>
+//1工程
