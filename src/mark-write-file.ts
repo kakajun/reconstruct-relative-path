@@ -68,7 +68,7 @@ function setDispFile(path: string, name: string, rootPath: string, restName?: st
   debug('foldNameArrs: ', foldNameArrs)
   //如果是文件, copy文件
   if (foldNameArrs[0].indexOf('.') > -1) {
-    // copyFile(path, name, rootPath)
+    copyFile(path, name, foldNameArrs[0])
   } else {
     // 下面处理文件夹递归关系
     if (seconFlag) {
@@ -95,12 +95,13 @@ function setDispFile(path: string, name: string, rootPath: string, restName?: st
  * @param {string} name
  * @param {string} nuePath
  */
-export function copyFile(path: string, name: string, newPath: string) {
-  debug('copyFile入参: ', name, path, newPath)
-  const str = fs.readFileSync(path, 'utf-8')
+export function copyFile(path: string, name: string, filName: string) {
+  debug('copyFile入参: ', name, path, filName)
+  const originPath = path.replace(name + '\\', '')
+  const str = fs.readFileSync(originPath, 'utf-8')
   // 异步写入数据到文件
-  fs.writeFile(newPath, str, { encoding: 'utf8' }, () => {
-    console.log('newfile write successful', newPath + name)
+  fs.writeFile(path + filName, str, { encoding: 'utf8' }, () => {
+    console.log('newfile write successful', path + filName)
   })
 }
 
