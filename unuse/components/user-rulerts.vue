@@ -36,7 +36,7 @@ import {
   onMounted,
   nextTick,
 } from "vue";
-import { SketchRule } from "./user-ruler.vue"; // 这里可以换成打包后的
+import { SketchRule } from "./test/user-ruler.vue"; // 这里可以换成打包后的
 
 const rectWidth = 600;
 const rectHeight = 320;
@@ -194,4 +194,5 @@ body * {
 }
 </style>
 ��程
+//1工程
 //1工程
