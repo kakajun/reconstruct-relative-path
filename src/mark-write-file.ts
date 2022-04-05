@@ -22,7 +22,7 @@ debug.enabled = true
  * @param {string} rootPath   确定哪一级开始创建文件夹
  */
 export function markWriteFile(nodes: ItemType[], name: string, path: string, rootPath: string) {
-  debug('入参: ', name, path)
+  // debug('入参: ', name, path)
   // 通过文件地址, 找到nodes的依赖地址, 把依赖文件也打标记
   const node = findNodes(nodes, path)
   // debug('查找的node: ', node)
@@ -49,15 +49,20 @@ export function markWriteFile(nodes: ItemType[], name: string, path: string, roo
 
 /**
  * @desc: 这里递归创建文件夹和写文件-文件内递归, 文件内处理, 不需要node
+ *       怎么知道原始路径? 就是把name一级干掉即可,干掉name级别就和外面的一模一样
+ * 这里就干两件事,1 创建文件夹, 2 创建文件
+ *
  * @author: majun
- * @param {ItemType} nodes
- * @param {string} name
- * @param {string} path  原文件的绝对路径
+ * @param {string} path    path 初始化时是原绝对路径, 后面就是已创建文件夹后的路径
+ * @param {string} name   一直是工程名字
+ * @param {string} rootPath  一直是跟路径
+ * @param {string} restName  递归创建文件夹的剩余name
  */
-function setDispFile(path: string, name: string, rootPath: string) {
+function setDispFile(path: string, name: string, rootPath: string, restName?: string) {
   debug('setDispFile入参: ', path, name)
+  let seconFlag = path.indexOf(name) > -1
   // 1. 依次找到最外层文件夹
-  const relative = path.replace(rootPath + '\\', '')
+  const relative =restName?restName: path.replace(rootPath + '\\', '')
   const foldNameArrs = relative.split('\\')
   debug('relative: ', relative)
   debug('foldNameArrs: ', foldNameArrs)
@@ -65,21 +70,20 @@ function setDispFile(path: string, name: string, rootPath: string) {
   if (foldNameArrs[0].indexOf('.') > -1) {
     // copyFile(path, name, rootPath)
   } else {
-    // 下面处理递归关系
-    if (path.indexOf(name) > -1) {
+    // 下面处理文件夹递归关系
+    if (seconFlag) {
       //还不是文件, 文件夹创建
       setFolder(path, foldNameArrs[0])
-      // 证明已经不是第一次了
-      path = path + foldNameArrs[0]
     } else {
-      //还不是文件, 文件夹创建
+      //还不是文件, 文件夹创建--第一次
       setFolder(rootPath + '\\' + name, foldNameArrs[0])
       path = rootPath + '\\' + name + '\\' + foldNameArrs[0]
     }
-    debug('递归参数: ', path, foldNameArrs[0])
     // 递归之前要去掉已建文件夹
-    // const newName = foldNameArrs.slice(0, 1).join('\\')
-    // setDispFile( path, newName,rootPath)
+     foldNameArrs.splice(0, 1)
+    const newName = foldNameArrs.join('\\')
+    debug('递归参数: ', path, newName)
+    setDispFile(path, name, rootPath, newName)
   }
 }
 
@@ -106,12 +110,14 @@ export function copyFile(path: string, name: string, newPath: string) {
  */
 export function setFolder(path: string, name: string) {
   debug('setFolder入参: ', path, name)
-  // if (path.indexOf('.') > -1) {
-  //   console.error('创建文件夹异常:')
-  //   debug('name: ', name)
-  //   debug('path: ', path)
-  //   return
-  // }
+  const foldNameArrs = path.split('\\')
+  const latArr = foldNameArrs.pop()  // 最后一位和要创建的一位一样,那么就会无限创建文件夹
+  if (path.indexOf('.') > -1 || latArr===name) {
+    console.error('创建文件夹异常:')
+    debug('name: ', name)
+    debug('path: ', path)
+    return
+  }
   //路径最后一位有斜杆,那不处理,----------------- 这里给代码加点容错, 增加代码健壮性
   let newPath = path.substring(path.length - 1) === '\\' ? path : path + '\\'
   if (!fs.existsSync(newPath + name)) {
