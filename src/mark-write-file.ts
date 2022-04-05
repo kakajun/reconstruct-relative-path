@@ -74,6 +74,7 @@ function setDispFile(path: string, name: string, rootPath: string, restName?: st
     if (seconFlag) {
       //还不是文件, 文件夹创建
       setFolder(path, foldNameArrs[0])
+      path = path + '\\' + foldNameArrs[0]
     } else {
       //还不是文件, 文件夹创建--第一次
       setFolder(rootPath + '\\' + name, foldNameArrs[0])
